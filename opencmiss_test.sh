@@ -71,7 +71,7 @@ if [ "$outcome" == "Success" ]; then
 
     if [ "$outcome" == "Success" ]; then
         # was the build successful
-        if grep "Build succeded" $slurmfile; then
+        if grep "Build succeeded" $slurmfile; then
             echo "Outcome of build: Success" >> $resultfn
         else
             echo "Outcome of build: Failure" >> $resultfn
@@ -112,7 +112,7 @@ cat <<EOF | mail -t -a slurm-configure.out -a slurm-build.out
 To: ${mailto}
 Subject: Test of OpenCMISS on Pan: ${outcome}
 
-Test completed at: $(date)
+Test completed: $(date)
 
 $resultstr
 
