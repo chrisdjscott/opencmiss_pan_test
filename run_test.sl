@@ -18,7 +18,9 @@ cd $SCRATCH_DIR
 
 # create directories and clone setup repo
 echo "Clone repo..."
-if ! srun git clone https://github.com/OpenCMISS/setup.git; then
+if srun git clone https://github.com/OpenCMISS/setup.git; then
+    echo "Clone succeeded"
+else
     echo "Clone failed!"
     exit 1
 fi
@@ -30,12 +32,16 @@ cd setup-build
 echo "Configure..."
 export CC=gcc
 export CXX=g++
-if ! srun --output=${LOGDIR}/slurm-configure.out cmake -DOPENCMISS_ROOT=../opencmiss ../setup; then
+if srun --output=${LOGDIR}/slurm-configure.out cmake -DOPENCMISS_ROOT=../opencmiss ../setup; then
+    echo "Configure succeeded"
+else
     echo "Configure failed!"
     exit 1
 fi
 echo "Build..."
-if ! srun --output=${LOGDIR}/slurm-build.out make; then
+if srun --output=${LOGDIR}/slurm-build.out make; then
+    echo "Build succeeded"
+else
     echo "Build failed!"
     exit 1
 fi

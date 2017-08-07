@@ -43,50 +43,63 @@ echo "Job ID is ${jobid}"
 # wait for job to complete
 echo "Waiting for job ${jobid} to complete..."
 sleep 10
-while squeue -u ${USER} | grep ${jobid}; do sleep 60; done
+while squeue -u ${USER} | grep ${jobid}; do sleep 600; done
 
-# was the configure successful
+# prepare for results
 slurmfile="slurm-${jobid}.out"
 resultfn="test_results.txt"
 rm -f ${resultfn}
 touch ${resultfn}
 outcome="Success"
-if grep "Configure failed!" $slurmfile; then
-    echo "Outcome of configure: Failure" >> $resultfn
-    outcome="Failure"
+
+# was the clone successful
+if grep "Clone succeeded" $slurmfile; then
+    echo "Outcome of clone: Success" >> $resultfn
 else
-    echo "Outcome of configure: Success" >> $resultfn
+    echo "Outcome of clone: Failure" >> $resultfn
+    outcome="Failure"
 fi
 
 if [ "$outcome" == "Success" ]; then
-    # was the build successful
-    if grep "Build failed!" $slurmfile; then
-        echo "Outcome of build: Failure" >> $resultfn
-        outcome="Failure"
+    # was the configure successful
+    if grep "Configure succeeded" $slurmfile; then
+        echo "Outcome of configure: Success" >> $resultfn
     else
-        echo "Outcome of build: Success" >> $resultfn
+        echo "Outcome of configure: Failure" >> $resultfn
+        outcome="Failure"
     fi
 
     if [ "$outcome" == "Success" ]; then
-        # check results
-        echo "" >> $resultfn
-        testfiles=$(ls test_*.out)
-        outcome="Success"
-        for fn in ${testfiles}; do
-            testname="${fn%.*}"
-            if grep "Program successfully completed" ${fn}; then
-                echo "${testname}: Success" >> $resultfn
-            else
-                echo "${testname}: Failure" >> $resultfn
-                outcome="Failure"
-            fi
-        done
+        # was the build successful
+        if grep "Build succeded" $slurmfile; then
+            echo "Outcome of build: Success" >> $resultfn
+        else
+            echo "Outcome of build: Failure" >> $resultfn
+            outcome="Failure"
+        fi
+
+        if [ "$outcome" == "Success" ]; then
+            # check results
+            echo "" >> $resultfn
+            testfiles=$(ls test_*.out)
+            outcome="Success"
+            for fn in ${testfiles}; do
+                testname="${fn%.*}"
+                if grep "Program successfully completed" ${fn}; then
+                    echo "${testname}: Success" >> $resultfn
+                else
+                    echo "${testname}: Failure" >> $resultfn
+                    outcome="Failure"
+                fi
+            done
+        fi
     fi
 fi
 
 # the outcome
 echo "Outcome is ${outcome}"
-resultstr="$(cat $resultfn)"
+echo "" >> $resultfn
+echo "Outcome: ${outcome}" >> $resultfn
 
 # send email if required
 if [ -z "${mailto}" ]; then
@@ -94,6 +107,7 @@ if [ -z "${mailto}" ]; then
 fi
 
 echo "Sending email..."
+resultstr="$(cat $resultfn)"
 cat <<EOF | mail -t -a slurm-configure.out -a slurm-build.out
 To: ${mailto}
 Subject: Test of OpenCMISS on Pan: ${outcome}
