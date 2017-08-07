@@ -1,7 +1,7 @@
 #!/bin/bash -l
 #SBATCH -J opencmiss
 #SBATCH -A nesi99999          # Project Account
-#SBATCH --time=5:00:00        # Walltime HH:MM:SS
+#SBATCH --time=6:00:00        # Walltime HH:MM:SS
 #SBATCH --mem-per-cpu=8G     # Memory
 #SBATCH --ntasks=1            # number of tasks
 #SBATCH --cpus-per-task=1     # number of threads

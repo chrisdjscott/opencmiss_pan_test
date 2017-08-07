@@ -51,6 +51,7 @@ resultfn="test_results.txt"
 rm -f ${resultfn}
 touch ${resultfn}
 outcome="Success"
+attach=""
 
 # was the clone successful
 if grep "Clone succeeded" $slurmfile; then
@@ -67,6 +68,7 @@ if [ "$outcome" == "Success" ]; then
     else
         echo "Outcome of configure: Failure" >> $resultfn
         outcome="Failure"
+        attach+=" -a slurm-configure.out"
     fi
 
     if [ "$outcome" == "Success" ]; then
@@ -76,6 +78,7 @@ if [ "$outcome" == "Success" ]; then
         else
             echo "Outcome of build: Failure" >> $resultfn
             outcome="Failure"
+            attach+=" -a slurm-build.out"
         fi
 
         if [ "$outcome" == "Success" ]; then
@@ -90,6 +93,7 @@ if [ "$outcome" == "Success" ]; then
                 else
                     echo "${testname}: Failure" >> $resultfn
                     outcome="Failure"
+                    attach+=" -a $fn"
                 fi
             done
         fi
@@ -99,7 +103,7 @@ fi
 # the outcome
 echo "Outcome is ${outcome}"
 echo "" >> $resultfn
-echo "Outcome: ${outcome}" >> $resultfn
+echo "Overall outcome: ${outcome}" >> $resultfn
 
 # send email if required
 if [ -z "${mailto}" ]; then
@@ -108,7 +112,7 @@ fi
 
 echo "Sending email..."
 resultstr="$(cat $resultfn)"
-cat <<EOF | mail -t -a slurm-configure.out -a slurm-build.out
+cat <<EOF | mail -t ${attach}
 To: ${mailto}
 Subject: Test of OpenCMISS on Pan: ${outcome}
 
