@@ -32,7 +32,8 @@ cd setup-build
 echo "Configure..."
 export CC=gcc
 export CXX=g++
-if srun --output=${LOGDIR}/slurm-configure.out cmake -DOPENCMISS_ROOT=../opencmiss ../setup; then
+export FC=gfortran
+if srun --output=${LOGDIR}/slurm-configure.out cmake -DOPENCMISS_ROOT=../opencmiss -DOPENCMISS_LIBRARIES=iron ../setup; then
     echo "Configure succeeded"
 else
     echo "Configure failed!"
