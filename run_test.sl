@@ -1,13 +1,13 @@
 #!/bin/bash -l
 #SBATCH -J opencmiss
 #SBATCH -A nesi99999          # Project Account
-#SBATCH --time=6:00:00        # Walltime HH:MM:SS
-#SBATCH --mem-per-cpu=8G     # Memory
+#SBATCH --time=4:00:00        # Walltime HH:MM:SS
+#SBATCH --mem=8G              # Memory
 #SBATCH --ntasks=1            # number of tasks
-#SBATCH --cpus-per-task=1     # number of threads
+#SBATCH --cpus-per-task=2     # number of threads
 
 # load modules
-module load CMake/3.6.1
+module load CMake/3.9.1
 module load gimkl/2017a
 module load Python/2.7.13-gimkl-2017a
 

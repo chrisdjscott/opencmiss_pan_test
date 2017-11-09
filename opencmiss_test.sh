@@ -88,7 +88,7 @@ if [ "$outcome" == "Success" ]; then
             outcome="Success"
             for fn in ${testfiles}; do
                 testname="${fn%.*}"
-                if grep "Program successfully completed" ${fn}; then
+                if grep "Program successfully completed" ${fn} > /dev/null; then
                     echo "${testname}: Success" >> $resultfn
                 else
                     echo "${testname}: Failure" >> $resultfn
